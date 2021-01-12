@@ -1,0 +1,38 @@
+html {
+  background : #ff6347;
+}
+
+#container {
+  border-radius :0px;
+  width:175px;
+  margin:20px auto;
+  padding:10px;
+  text-align:center;
+  background : #ff6347;
+}
+  
+#timer {
+  font-family: 'Open Sans', sans-serif;
+  color:#fff; 
+  font-size:50px; 
+  margin:10px auto;
+  width:175px;
+  height:75px;
+  cursor:default;
+}
+
+#buttons button {
+  font-family: 'Open Sans', sans-serif;
+  border:none; 
+  color:#ff3814; 
+  cursor:pointer; 
+  padding:5px; 
+  width:150px;
+  margin:5px auto;
+  font-size:15px;
+  height : 50px;
+  border-radius : 15px;
+  display: block;
+  background: #fff;
+}
+  
