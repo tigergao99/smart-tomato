@@ -1,12 +1,12 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "Smart Tomato!",
     "description": "A time management tool that helps you balance your work and break time.",
     "background": {
-        "scripts": ["scripts/background.js"],
-        "persistent": false
+        "service_worker": "scripts/service_worker.js",
+        "type": "module"
     },
-    "browser_action": {
+    "action": {
         "default_popup": "index.html",
         "default_icon": {
             "16": "images/tomato-16.png",

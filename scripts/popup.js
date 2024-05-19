@@ -1,26 +1,18 @@
-/* Notes about timer logic:
- * On new popup load -> fetch endtime if exists
- * On button click -> notify background of new endtime
- */
-var buttons = [
-    'start',
-    'shortBreak',
-    'longBreak',
-    'reset'
-];
-var endTime = null;
+const buttons = ['start', 'shortBreak', 'longBreak', 'reset'];
+let endTime = null;
 
-function syncInfo() {
-    chrome.runtime.sendMessage({message: "timer"}, function(response) {
-        console.log(response.time);
+async function syncInfo() {
+    try {
+        const response = await chrome.runtime.sendMessage({ message: "timer" });
         if (response.time) {
             console.log('Got: ' + response.time);
             endTime = new Date(response.time);
         } else {
             endTime = null;
         }
-    });
-    updateTimer();
+    } catch (error) {
+        console.error('Error syncing info:', error);
+    }
 }
 
 function updateDomTimer(seconds) {
@@ -30,8 +22,8 @@ function updateDomTimer(seconds) {
 
 function updateTimer() {
     if (endTime) {
-        var curTime = new Date();
-        var remainingTime = Math.round((endTime - curTime) / 1000);
+        const curTime = new Date();
+        const remainingTime = Math.round((endTime - curTime) / 1000);
         if (remainingTime >= 0) {
             updateDomTimer(remainingTime);
         }
@@ -40,25 +32,33 @@ function updateTimer() {
     }
 }
 
+async function syncAndUpdate() {
+    await syncInfo();
+    updateTimer();
+}
+
 function main() {
-    syncInfo();
-    setInterval(updateTimer, 1000);
-    setInterval(syncInfo, 5000);
-    document.getElementById('start').addEventListener('click', function() {
-        chrome.runtime.sendMessage({message: 'start'}, () => {});
-        syncInfo();
+    syncAndUpdate();
+    setInterval(syncAndUpdate, 1000);
+
+    document.getElementById('start').addEventListener('click', async function () {
+        await chrome.runtime.sendMessage({ message: 'start' });
+        syncAndUpdate();
     });
-    document.getElementById('shortBreak').addEventListener('click', function() {
-        chrome.runtime.sendMessage({message: 'shortBreak'}, () => {});
-        syncInfo();
+
+    document.getElementById('shortBreak').addEventListener('click', async function () {
+        await chrome.runtime.sendMessage({ message: 'shortBreak' });
+        syncAndUpdate();
     });
-    document.getElementById('longBreak').addEventListener('click', function() {
-        chrome.runtime.sendMessage({message: 'longBreak'}, () => {});
-        syncInfo();
+
+    document.getElementById('longBreak').addEventListener('click', async function () {
+        await chrome.runtime.sendMessage({ message: 'longBreak' });
+        syncAndUpdate();
     });
-    document.getElementById('reset').addEventListener('click', function() {
-        chrome.runtime.sendMessage({message: 'reset'}, (response) => {return true;});
-        syncInfo();
+
+    document.getElementById('reset').addEventListener('click', async function () {
+        await chrome.runtime.sendMessage({ message: 'reset' });
+        syncAndUpdate();
     });
 }
 
